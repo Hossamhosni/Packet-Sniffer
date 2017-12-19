@@ -53,7 +53,7 @@ class Ui_MainWidget(object):
         self.packetInfo = QtWidgets.QListView(Form)
         self.packetInfo.setObjectName("packetInfo")
         self.verticalLayout.addWidget(self.packetInfo)
-        self.hexView = QtWidgets.QListView(Form)
+        self.hexView = QtWidgets.QListWidget(Form)
         self.hexView.setObjectName("hexView")
         self.verticalLayout.addWidget(self.hexView)
         self.gridLayout.addLayout(self.verticalLayout, 0, 0, 1, 1)
