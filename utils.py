@@ -29,6 +29,10 @@ def getPacketInfoDict(packet):
 			p["ipv"] = str(packet[IP].version)
 		else:
 			pass#print("Unknown Protocol " + proto)
+		if (p["srcPort"] == "80" or p["dstPort"] == "80"):
+			if (p["srcPort"] == "80"):
+				pass
+			p["proto"] = "HTTP"
 		p["srcIP"] = packet[IP].src
 		p["dstIP"] = packet[IP].dst
 	except(AttributeError):
