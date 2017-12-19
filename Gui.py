@@ -22,12 +22,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		pass
 
 	def openPacket(self):
-		name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
-		selectedPackets = rdpcap(name[0])
+		pass
+
+	def closeEvent(self, event):
 		globals.stop = True
-		self.mainWidget.clearPacketList()
-		self.mainWidget.addListOfPackets(selectedPackets)
-		self.setCentralWidget(self.mainWidget)
 
 	def connectStart(self, fn):
 		self.actionStart.triggered.connect(fn)
@@ -42,7 +40,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.interfacesWidget.addInterfaces(interfacesList)
 
 	def getCurrentInterface(self):
-		return self.interfacesWidget.currentInterface()
+		try:
+			self.currentInterface = self.interfacesWidget.currentInterface()
+			return self.interfacesWidget.currentInterface()
+		except(RuntimeError):
+			return self.currentInterface
 
 	def addPacketToList(self, packetDict, packet):
 		self.mainWidget.addPacketToList(packetDict, packet)
@@ -72,6 +74,7 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		self.setupUi(self)
 		self.countPacket = 0
 		self.packetList = []
+		self.packetTable.itemClicked.connect(self.rowClicked)
 
 	def clearPacketList(self):
 		self.packetTable.setRowCount(0)
@@ -82,6 +85,11 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		for packet in packetList:
 			packet.show()
 			self.addPacketToList(getPacketInfoDict(packet), packet)
+
+	def rowClicked(self):
+		print("Hello")
+		pass
+
 	def addPacketToList(self, packetDict, originalPacket):
 		self.packetTable.setRowCount(self.packetTable.rowCount() + 1)
 		time = QtWidgets.QTableWidgetItem()

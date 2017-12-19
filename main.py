@@ -26,29 +26,22 @@ def stop_callback():
 
 # Adds Packet to Table in MainInterface
 def showPacket(x):
-	#print(x.show())
+	print(x.show())
 	#capturedPackets.append(x)
 	mainWindow.addPacketToList(getPacketInfoDict(x), x)
 
 ### Action Handlers ###
-# Handler for pressing the Start button in the interfaces window
-def startHandlerOnInterfacesWindow():
-	global interface
-	globals.interface = ui.currentInterface()
-	ui.hide()
-	globals.MainInterface.show()
-	thread = SnifferThread("Sniffer", globals.interface)
-	thread.start()
+
 
 
 # Handler for pressing the Stop Button in the MainWindow
+def stopHandler():
+	globals.stop = True
 
 def startHandler():
-	# global interface
-	# global MainWindow
-	# globals.stop = False
-	# globals.MainInterface.clearPacketList()
+	globals.stop = False
 	mainWindow.setWidget("Main")
+	mainWindow.clearPacketsList()
 	thread = SnifferThread("Sniffer", mainWindow.getCurrentInterface())
 	thread.start()
 
@@ -67,6 +60,8 @@ if __name__ == "__main__":
 	globals.init()
 	mainWindow = MainWindow()
 	mainWindow.connectStart(startHandler)
+	mainWindow.connectRestart(startHandler)
+	mainWindow.connectStop(stopHandler)
 	mainWindow.addInterfaces(getInterfacesList())
 	mainWindow.show()
 	sys.exit(app.exec_())
