@@ -19,10 +19,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.actionOpen_Packet.triggered.connect(self.openPacket)
 
 	def savePacket(self):
-		pass
+		 name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
+		 wrpcap(name[0] + ".pcap", self.mainWidget.getPacketList())
 
 	def openPacket(self):
-		pass
+		name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
+		self.mainWidget.clearPacketList()
+		selectedPackets = rdpcap(name[0])
+		self.mainWidget.addListOfPackets(selectedPackets)
+		self.setCentralWidget(self.mainWidget)
 
 	def closeEvent(self, event):
 		globals.stop = True
@@ -85,6 +90,10 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		for packet in packetList:
 			packet.show()
 			self.addPacketToList(getPacketInfoDict(packet), packet)
+
+
+	def getPacketList(self):
+		return self.packetList
 
 	def rowClicked(self):
 		print("Hello")
