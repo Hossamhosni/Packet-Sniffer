@@ -38,3 +38,24 @@ def getPacketInfoDict(packet):
 	except(AttributeError):
 		p["proto"] = packet.lastlayer().name
 	return p
+
+def hexdump2(x, dump=False):
+	s=""
+	x=bytes(x)
+	l=len(x)
+	i=0
+	while i<l:
+		s+="%04x "%i
+		for j in range(16):
+			if j%16==7:
+				s+=""
+		s+=" "
+		s+=sane_color(x[i:i+16])
+		i+=16
+		s+="\n"
+	if s.endswith("\n"):
+		s=s[:-1]
+	if dump:
+		return s
+	else:
+		print (s)

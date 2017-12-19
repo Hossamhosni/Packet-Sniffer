@@ -2,7 +2,8 @@ from mainWidget import Ui_MainWidget
 from interfacesWidget import Ui_InterfacesWidget
 from mainWindow import Ui_MainWindow
 
-from utils import getPacketInfoDict
+#from utils import getPacketInfoDict
+from utils import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from scapy.all import *
 import threading
@@ -96,8 +97,12 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		return self.packetList
 
 	def rowClicked(self):
-		print("Hello")
-		pass
+		#print("Hello")
+		rowNum = self.packetTable.currentRow()
+		hexItem = QtWidgets.QListWidgetItem()
+		hexItem.setText(hexdump2(self.packetList[rowNum],True))
+		self.hexView.clear()
+		self.hexView.addItem(hexItem)
 
 	def addPacketToList(self, packetDict, originalPacket):
 		self.packetTable.setRowCount(self.packetTable.rowCount() + 1)
