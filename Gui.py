@@ -22,7 +22,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.parentWidget.setCurrentWidget(self.interfacesWidget)
 		self.actionSave_Packet.triggered.connect(self.savePacket)
 		self.actionOpen_Packet.triggered.connect(self.openPacket)
-		self.actionQuit.triggered.connect(self.closeEvent)
+		self.actionQuit.triggered.connect(self.Quit)
 		
 
 	def savePacket(self):
@@ -35,6 +35,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		selectedPackets = rdpcap(name[0])
 		self.mainWidget.addListOfPackets(selectedPackets)
 		self.parentWidget.setCurrentWidget(self.mainWidget)
+
+	def Quit(self):
+		buttonReply = QtWidgets.QMessageBox.question(self, 'Unsaved packets...', "Do you want to stop the capture and save the captured packets before quitting?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+		if buttonReply == QtWidgets.QMessageBox.Save:
+			print('Yes clicked.')
+			globals.stop = True
+			name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
+			wrpcap(name[0] + ".pcap", self.mainWidget.getPacketList())
+			sys.exit()
+		elif buttonReply == QtWidgets.QMessageBox.Discard:
+			print('No clicked.')
+			globals.stop = True
+			sys.exit()
+		else:
+			pass
+		#msg = QtWidgets.QMessageBox(self, "Unsaved packets...", "Do you want to stop the capture and save the captured packets before quitting?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+		#if(msg == QtWidgets.QMessageBox.Save):
+			#closeEvent()
+			#savePacket()
+			#sys.exit()
+		#elif(msg == QtWidgets.QMessageBox.Discard):
+			#closeEvent()
+			#sys.exit()
+		#else:
+			#pass
 
 	def closeEvent(self, event):
 		globals.stop = True
