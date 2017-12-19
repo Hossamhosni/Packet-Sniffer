@@ -76,18 +76,3 @@ class Ui_InterfacesWindow(object):
         self.actionStop.setText(_translate("MainWindow", "Stop"))
         self.actionRestart.setText(_translate("MainWindow", "Restart"))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
-
-        
-
-    def addInterfaces(self, interfacesList):
-        for i in interfacesList:
-            self.interfacesList.addItem(i)
-
-    def currentInterface(self):
-        return self.interfacesList.currentText()
-
-    def startCapturing(self):
-        print(self.currentInterface())
-
-    def connectStart(self, fn):
-        self.actionStart.triggered.connect(fn)
