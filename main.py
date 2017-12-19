@@ -26,7 +26,7 @@ def stop_callback():
 
 # Adds Packet to Table in MainInterface
 def showPacket(x):
-	print(x.show())
+	#print(x.show())
 	#capturedPackets.append(x)
 	mainWindow.addPacketToList(getPacketInfoDict(x), x)
 
@@ -40,10 +40,14 @@ def stopHandler():
 
 def startHandler():
 	globals.stop = False
-	mainWindow.setWidget("Main")
-	mainWindow.clearPacketsList()
-	thread = SnifferThread("Sniffer", mainWindow.getCurrentInterface())
-	thread.start()
+	try:
+		mainWindow.setWidget("Main")
+		mainWindow.clearPacketsList()
+		thread = SnifferThread("Sniffer", mainWindow.getCurrentInterface())
+		thread.start()
+	except(AttributeError):
+		mainWindow.setWidget("Other")
+
 
 
 # Get interfaces list to be shown in the interfaces window

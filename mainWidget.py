@@ -25,6 +25,8 @@ class Ui_MainWidget(object):
         self.lineEdit.setClearButtonEnabled(False)
         self.lineEdit.setObjectName("lineEdit")
         self.horizontalLayout.addWidget(self.lineEdit)
+        self.filterButton = QtWidgets.QPushButton("Filter")
+        self.horizontalLayout.addWidget(self.filterButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.packetTable = QtWidgets.QTableWidget(Form)
         self.packetTable.setRowCount(0)

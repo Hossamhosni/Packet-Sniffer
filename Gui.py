@@ -15,20 +15,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.setupUi(self)
 		self.interfacesWidget = InterfacesWidget()
 		self.mainWidget= MainWidget()
-		self.setCentralWidget(self.interfacesWidget)
+		self.parentWidget = QtWidgets.QStackedWidget(self)
+		self.parentWidget.addWidget(self.mainWidget)
+		self.parentWidget.addWidget(self.interfacesWidget)
+		self.setCentralWidget(self.parentWidget)
+		self.parentWidget.setCurrentWidget(self.interfacesWidget)
 		self.actionSave_Packet.triggered.connect(self.savePacket)
 		self.actionOpen_Packet.triggered.connect(self.openPacket)
+		self.actionQuit.triggered.connect(self.closeEvent)
+		
 
 	def savePacket(self):
-		 name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
-		 wrpcap(name[0] + ".pcap", self.mainWidget.getPacketList())
+		name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
+		wrpcap(name[0] + ".pcap", self.mainWidget.getPacketList())
 
 	def openPacket(self):
 		name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
 		self.mainWidget.clearPacketList()
 		selectedPackets = rdpcap(name[0])
 		self.mainWidget.addListOfPackets(selectedPackets)
-		self.setCentralWidget(self.mainWidget)
+		self.parentWidget.setCurrentWidget(self.mainWidget)
 
 	def closeEvent(self, event):
 		globals.stop = True
@@ -60,9 +66,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
 	def setWidget(self, w):
 		if (w == "Main"):
-			self.setCentralWidget(self.mainWidget)
+			self.parentWidget.setCurrentWidget(self.mainWidget)
 		else:
-			self.setCentralWidget(self.interfacesWidget)
+			self.parentWidget.setCurrentWidget(self.interfacesWidget)
 
 class InterfacesWidget(QtWidgets.QWidget, Ui_InterfacesWidget):
 	def __init__(self):
@@ -81,6 +87,10 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		self.countPacket = 0
 		self.packetList = []
 		self.packetTable.itemClicked.connect(self.rowClicked)
+		self.hexView.setStyleSheet("font: 9pt Consolas")
+		self.packetTable.setStyleSheet("font: 9pt Consolas")
+		self.packetTable.horizontalHeader().setStretchLastSection(True)
+		self.filterButton.clicked.connect(self.filterFunction)
 
 	def clearPacketList(self):
 		self.packetTable.setRowCount(0)
@@ -97,12 +107,14 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		return self.packetList
 
 	def rowClicked(self):
-		#print("Hello")
 		rowNum = self.packetTable.currentRow()
 		hexItem = QtWidgets.QListWidgetItem()
-		hexItem.setText(hexdump2(self.packetList[rowNum],True))
+		hexItem.setText(hexdump3(self.packetList[rowNum],True))
 		self.hexView.clear()
 		self.hexView.addItem(hexItem)
+
+	def filterFunction(self):
+		pass
 
 	def addPacketToList(self, packetDict, originalPacket):
 		self.packetTable.setRowCount(self.packetTable.rowCount() + 1)
@@ -112,8 +124,6 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		protocol = QtWidgets.QTableWidgetItem()
 		length = QtWidgets.QTableWidgetItem()
 		info = QtWidgets.QTableWidgetItem()
-
-		hexa = QtWidgets.QListWidgetItem()
 
 		# Set flags for each Widget
 		time.setFlags(QtCore.Qt.ItemIsSelectable|QtCore.Qt.ItemIsEnabled)

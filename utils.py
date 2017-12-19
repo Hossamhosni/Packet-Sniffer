@@ -45,10 +45,14 @@ def hexdump2(x, dump=False):
 	l=len(x)
 	i=0
 	while i<l:
-		s+="%04x "%i
+		s+=("%04x "%i)
 		for j in range(16):
+			if (i + j < 1):
+				s += ("%02X " % orb(x[i+j]))
+			else:
+				s += " "
 			if j%16==7:
-				s+=""
+				s+=" "
 		s+=" "
 		s+=sane_color(x[i:i+16])
 		i+=16
@@ -59,3 +63,26 @@ def hexdump2(x, dump=False):
 		return s
 	else:
 		print (s)
+
+def hexdump3(x, dump = False):
+	s = ""
+	if type(x) is not str and type(x) is not bytes:
+		try:
+			x = bytes(x)
+		except:
+			x = str(x)
+	l = len(x)
+	i = 0
+	while i < l:
+		s += ("%04x  \t" % i)
+		for j in range(16):
+			if i+j < l:
+				s += ("%02X " % orb(x[i+j]))
+			else:
+				s += ("  ")
+			if j%16 == 7:
+				s += (" ")
+		s += ("\t\t")
+		s +=(sane_color(x[i:i+16]) + '\n')
+		i += 16
+	return s
