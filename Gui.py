@@ -137,33 +137,33 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 
 	def filterFunction(self):
 		query = self.lineEdit.text()
-                filteredList = []
-                protocols = ['udp', 'tcp', 'http', 'icmp', 'arp']
-                if (query.strip() == "" or (query.lower() not in protocols and "==" not in query)):
-                        for i in range (0, len(self.packetList)):
-                                self.packetTable.setRowHidden(i, False)
-                elif "==" not in query:
-                        for i in range (0, len(self.packetList)):
-                                self.packetTable.setRowHidden(i, False)
-                        if (query.lower() in protocols):
-                                for i in range(0, len(self.packetList)):
-                                        dictPacket = getPacketInfoDict(self.packetList[i])
-                                        if (dictPacket['proto'].lower() != query.lower()):
-                                                self.packetTable.setRowHidden(i, True)
-                else:
-                        for i in range (0, len(self.packetList)):
-                                self.packetTable.setRowHidden(i, False)
-                        column, value = query.split('==')
-                        column = column.strip()
-                        value = value.strip()
-                        if (column.lower() == "ip.addr"):
-                                for i in range(0, len(self.packetList)):
-                                        dictPacket = getPacketInfoDict(self.packetList[i])
-                                        try:
-                                                if (dictPacket['srcIP'].lower() != value.lower() and dictPacket['dstIP'] != value.lower()):
-                                                        self.packetTable.setRowHidden(i, True)
-                                        except(AttributeError):
-                                                self.packetTable.setRowHidden(i, True)
+		filteredList = []
+		protocols = ['udp', 'tcp', 'http', 'icmp', 'arp']
+		if (query.strip() == "" or (query.lower() not in protocols and "==" not in query)):
+			for i in range (0, len(self.packetList)):
+				self.packetTable.setRowHidden(i, False)
+		elif "==" not in query:
+			for i in range (0, len(self.packetList)):
+				self.packetTable.setRowHidden(i, False)
+			if (query.lower() in protocols):
+				for i in range(0, len(self.packetList)):
+					dictPacket = getPacketInfoDict(self.packetList[i])
+					if (dictPacket['proto'].lower() != query.lower()):
+						self.packetTable.setRowHidden(i, True)
+		else:
+			for i in range (0, len(self.packetList)):
+				self.packetTable.setRowHidden(i, False)
+			column, value = query.split('==')
+			column = column.strip()
+			value = value.strip()
+			if (column.lower() == "ip.addr"):
+				for i in range(0, len(self.packetList)):
+					dictPacket = getPacketInfoDict(self.packetList[i])
+					try:
+						if (dictPacket['srcIP'].lower() != value.lower() and dictPacket['dstIP'] != value.lower()):
+							self.packetTable.setRowHidden(i, True)
+					except(AttributeError):
+						self.packetTable.setRowHidden(i, True)
 
 	def addPacketToList(self, packetDict, originalPacket):
 		self.packetTable.setRowCount(self.packetTable.rowCount() + 1)
