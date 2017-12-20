@@ -1,8 +1,6 @@
 from mainWidget import Ui_MainWidget
 from interfacesWidget import Ui_InterfacesWidget
 from mainWindow import Ui_MainWindow
-
-#from utils import getPacketInfoDict
 from utils import *
 from PyQt5 import QtCore, QtGui, QtWidgets
 from scapy.all import *
@@ -20,10 +18,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		self.parentWidget.addWidget(self.interfacesWidget)
 		self.setCentralWidget(self.parentWidget)
 		self.parentWidget.setCurrentWidget(self.interfacesWidget)
+		self.actionSave_Packet.setEnabled(False)
 		self.actionSave_Packet.triggered.connect(self.savePacket)
 		self.actionOpen_Packet.triggered.connect(self.openPacket)
 		self.actionQuit.triggered.connect(self.Quit)
-		
+
 
 	def savePacket(self):
 		name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
@@ -35,33 +34,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 		selectedPackets = rdpcap(name[0])
 		self.mainWidget.addListOfPackets(selectedPackets)
 		self.parentWidget.setCurrentWidget(self.mainWidget)
+		self.actionSave_Packet.setEnabled(True)
 
 	def Quit(self):
-		buttonReply = QtWidgets.QMessageBox.question(self, 'Unsaved packets...', "Do you want to stop the capture and save the captured packets before quitting?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
-		if buttonReply == QtWidgets.QMessageBox.Save:
-			print('Yes clicked.')
-			globals.stop = True
-			name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
-			wrpcap(name[0] + ".pcap", self.mainWidget.getPacketList())
-			sys.exit()
-		elif buttonReply == QtWidgets.QMessageBox.Discard:
-			print('No clicked.')
-			globals.stop = True
-			sys.exit()
+		if (self.parentWidget.currentWidget() == self.mainWidget):
+			buttonReply = QtWidgets.QMessageBox.question(self,
+			 'Unsaved packets...', "Do you want to stop the capture and save the captured packets before quitting?",
+			  QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
+			if buttonReply == QtWidgets.QMessageBox.Save:
+				globals.stop = True
+				name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')
+				wrpcap(name[0] + ".pcap", self.mainWidget.getPacketList())
+				sys.exit()
+			elif buttonReply == QtWidgets.QMessageBox.Discard:
+				globals.stop = True
+				sys.exit()
+			else:
+				pass
 		else:
-			pass
-		#msg = QtWidgets.QMessageBox(self, "Unsaved packets...", "Do you want to stop the capture and save the captured packets before quitting?", QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard | QtWidgets.QMessageBox.Cancel)
-		#if(msg == QtWidgets.QMessageBox.Save):
-			#closeEvent()
-			#savePacket()
-			#sys.exit()
-		#elif(msg == QtWidgets.QMessageBox.Discard):
-			#closeEvent()
-			#sys.exit()
-		#else:
-			#pass
+			globals.stop = True
+			sys.exit()
 
 	def closeEvent(self, event):
+		#self.Quit()
 		globals.stop = True
 
 	def connectStart(self, fn):
@@ -92,6 +87,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 	def setWidget(self, w):
 		if (w == "Main"):
 			self.parentWidget.setCurrentWidget(self.mainWidget)
+			self.actionSave_Packet.setEnabled(True)
 		else:
 			self.parentWidget.setCurrentWidget(self.interfacesWidget)
 
@@ -124,7 +120,6 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 
 	def addListOfPackets(self, packetList):
 		for packet in packetList:
-			packet.show()
 			self.addPacketToList(getPacketInfoDict(packet), packet)
 
 
@@ -134,9 +129,11 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 	def rowClicked(self):
 		rowNum = self.packetTable.currentRow()
 		hexItem = QtWidgets.QListWidgetItem()
-		hexItem.setText(hexdump3(self.packetList[rowNum],True))
+		hexItem.setText(hexdump3(self.packetList[rowNum], True))
 		self.hexView.clear()
 		self.hexView.addItem(hexItem)
+		print(self.packetList[rowNum].show())
+		print(len(self.packetList[rowNum]))
 
 	def filterFunction(self):
 		pass
@@ -160,24 +157,37 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 
 		time.setText(originalPacket.sprintf("%.time%"))
 		protocol.setText( packetDict["proto"])
+		length.setText(packetDict['len'])
 
-		if (packetDict["proto"] == "UDP" or packetDict["proto"] == "TCP" or packetDict["proto"] == "HTTP"):
-			src.setText( packetDict["srcIP"])
-			dst.setText( packetDict["dstIP"])
+		if (packetDict["proto"] == "UDP" or packetDict["proto"] == "TCP"):
+			src.setText( packetDict["IPsrc"])
+			dst.setText( packetDict["IPdst"])
 			length.setText( str(packetDict["len"]))
 			info.setText( packetDict["srcPort"] + " -> " + packetDict["dstPort"])
-		else:
+		elif (packetDict['proto'] == 'ARP'):
 			src.setText( packetDict["srcMac"])
 			dst.setText( packetDict["dstMac"])
-		
-		self.packetTable.setItem(self.countPacket, 1, time)
-		self.packetTable.setItem(self.countPacket, 2, src)
-		self.packetTable.setItem(self.countPacket, 3, dst)
-		self.packetTable.setItem(self.countPacket, 4, protocol)
-		self.packetTable.setItem(self.countPacket, 5, length)
-		self.packetTable.setItem(self.countPacket, 6, info)
+			info.setText(packetDict["info"])
+		elif (packetDict['proto'] == 'ICMP'):
+			src.setText(packetDict['IPsrc'])
+			dst.setText(packetDict['IPdst'])
+		else:
+			if ('IPsrc' in packetDict):
+				src.setText(packetDict['IPsrc'])
+				dst.setText(packetDict['IPdst'])
+			else:
+				src.setText(packetDict['srcMac'])
+				dst.setText(packetDict['dstMac'])
+
+		self.packetTable.setItem(self.countPacket, 0, time)
+		self.packetTable.setItem(self.countPacket, 1, src)
+		self.packetTable.setItem(self.countPacket, 2, dst)
+		self.packetTable.setItem(self.countPacket, 3, protocol)
+		self.packetTable.setItem(self.countPacket, 4, length)
+		self.packetTable.setItem(self.countPacket, 5, info)
 		for i in range(self.packetTable.rowCount() + 2):
 			self.packetTable.setRowHeight(i, 20)
 
-		self.packetList.append(originalPacket) # add packet to packet list 
+		self.packetList.append(originalPacket)
+		#print (len(self.packetList)) # add packet to packet list
 		self.countPacket += 1 # increment packet count

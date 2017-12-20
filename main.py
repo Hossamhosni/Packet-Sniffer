@@ -7,7 +7,7 @@ from Gui import MainWindow
 import globals
 
 
-# Thread for Sniffing 
+# Thread for Sniffing
 class SnifferThread(threading.Thread):
 	def __init__(self, name, interface):
 		threading.Thread.__init__(self)
@@ -15,10 +15,7 @@ class SnifferThread(threading.Thread):
 		self.interface = interface
 
 	def run(self):
-		global stop
 		packets = sniff(iface=self.interface, prn=lambda x:showPacket(x), stop_callback= stop_callback)
-		#packets = rdpcap("F:\Programming and Development\Python\scapy-http\example_network_traffic.pcap")
-		#MainInterface.addListOfPackets(packets)
 
 # Callback Function to stop Sniffing
 def stop_callback():
@@ -26,14 +23,9 @@ def stop_callback():
 
 # Adds Packet to Table in MainInterface
 def showPacket(x):
-	#print(x.show())
-	#capturedPackets.append(x)
 	mainWindow.addPacketToList(getPacketInfoDict(x), x)
 
 ### Action Handlers ###
-
-
-
 # Handler for pressing the Stop Button in the MainWindow
 def stopHandler():
 	globals.stop = True
@@ -47,9 +39,6 @@ def startHandler():
 		thread.start()
 	except(AttributeError):
 		mainWindow.setWidget("Other")
-
-
-
 # Get interfaces list to be shown in the interfaces window
 def getInterfacesList():
 	ifList = []
@@ -58,11 +47,11 @@ def getInterfacesList():
 	return ifList
 
 if __name__ == "__main__":
-
-	global ui
 	app = QtWidgets.QApplication(sys.argv)
+	app.setStyle('Fusion')
 	globals.init()
 	mainWindow = MainWindow()
+	mainWindow.setWindowTitle('Packet Sniffer')
 	mainWindow.connectStart(startHandler)
 	mainWindow.connectRestart(startHandler)
 	mainWindow.connectStop(stopHandler)
