@@ -126,6 +126,7 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		return self.packetList
 
 	def rowClicked(self):
+		#hex part
 		rowNum = self.packetTable.currentRow()
 		hexItem = QtWidgets.QListWidgetItem()
 		hexItem.setText(hexdump3(self.packetList[rowNum], True))
@@ -133,6 +134,27 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		self.hexView.addItem(hexItem)
 		print(self.packetList[rowNum].show())
 		print(len(self.packetList[rowNum]))
+		
+		#packet info part
+		self.packetInfo.setHeaderLabel("Packet Information:")
+		self.packetInfo.clear()
+		#parents
+		infoItem = QtWidgets.QTreeWidgetItem(self.packetInfo)
+		infoItem.setText(0,self.packetList[rowNum].mysummary())
+		#infoItem2 = QtWidgets.QTreeWidgetItem(self.packetInfo)
+		#infoItem2.setText(0,"hello there!")
+		#infoItem3 = QtWidgets.QTreeWidgetItem(self.packetInfo)
+		#infoItem3.setText(0,"hello there!")
+		#children
+		childItem = QtWidgets.QTreeWidgetItem(infoItem)
+		childItem.setText(0,self.packetList[rowNum].summary())
+		#childItem2 = QtWidgets.QTreeWidgetItem(infoItem2)
+		#childItem2.setText(0,"hello!!!")
+		#childItem3 = QtWidgets.QTreeWidgetItem(infoItem3)
+		#childItem3.setText(0,"hello!!!")
+		
+        #try
+		#print(self.packetList[rowNum].mysummary())
 
 	def filterFunction(self):
 		query = self.lineEdit.text()
