@@ -26,6 +26,11 @@ def getPacketInfoDict(packet):
 		p['IPttl'] = str(packet[IP].ttl)
 		p['IPcheckSum'] = packet[IP].chksum
 		p['IPlen'] = str(packet[IP].len)
+	if (packet.haslayer(IPv6)):
+		p['IPsrc'] = packet[IPv6].src
+		p['IPdst'] = packet[IPv6].dst
+		p['IPVersion'] = '6'
+		p['IPlen'] = packet[IPv6].plen
 	# TCP and UDP
 	if (packet.haslayer(UDP) or packet.haslayer(TCP)):
 		if (packet.haslayer(UDP)):

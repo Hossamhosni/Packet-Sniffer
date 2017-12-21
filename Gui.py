@@ -56,7 +56,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 			sys.exit()
 
 	def closeEvent(self, event):
-		#self.Quit()
 		globals.stop = True
 
 	def connectStart(self, fn):
@@ -185,26 +184,29 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		time.setText(originalPacket.sprintf("%.time%"))
 		protocol.setText( packetDict["proto"])
 		length.setText(packetDict['len'])
-
-		if (packetDict["proto"] == "UDP" or packetDict["proto"] == "TCP"):
-			src.setText( packetDict["IPsrc"])
-			dst.setText( packetDict["IPdst"])
-			length.setText( str(packetDict["len"]))
-			info.setText( packetDict["srcPort"] + " -> " + packetDict["dstPort"])
-		elif (packetDict['proto'] == 'ARP'):
-			src.setText( packetDict["srcMac"])
-			dst.setText( packetDict["dstMac"])
-			info.setText(packetDict["info"])
-		elif (packetDict['proto'] == 'ICMP'):
-			src.setText(packetDict['IPsrc'])
-			dst.setText(packetDict['IPdst'])
-		else:
-			if ('IPsrc' in packetDict):
+		try:
+			if (packetDict["proto"] == "UDP" or packetDict["proto"] == "TCP"):
+				src.setText( packetDict["IPsrc"])
+				dst.setText( packetDict["IPdst"])
+				length.setText( str(packetDict["len"]))
+				info.setText( packetDict["srcPort"] + " -> " + packetDict["dstPort"])
+			elif (packetDict['proto'] == 'ARP'):
+				src.setText( packetDict["srcMac"])
+				dst.setText( packetDict["dstMac"])
+				info.setText(packetDict["info"])
+			elif (packetDict['proto'] == 'ICMP'):
 				src.setText(packetDict['IPsrc'])
 				dst.setText(packetDict['IPdst'])
 			else:
-				src.setText(packetDict['srcMac'])
-				dst.setText(packetDict['dstMac'])
+				if ('IPsrc' in packetDict):
+					src.setText(packetDict['IPsrc'])
+					dst.setText(packetDict['IPdst'])
+				else:
+					src.setText(packetDict['srcMac'])
+					dst.setText(packetDict['dstMac'])
+		except(KeyError):
+			print("Problem with Packet:")
+			print(originalPacket.show())
 
 		self.packetTable.setItem(self.countPacket, 0, time)
 		self.packetTable.setItem(self.countPacket, 1, src)
