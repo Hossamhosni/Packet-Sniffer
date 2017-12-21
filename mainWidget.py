@@ -50,7 +50,7 @@ class Ui_MainWidget(object):
         self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_3.setObjectName("line_3")
         self.verticalLayout.addWidget(self.line_3)
-        self.packetInfo = QtWidgets.QListView(Form)
+        self.packetInfo = QtWidgets.QTreeWidget(Form)
         self.packetInfo.setObjectName("packetInfo")
         self.verticalLayout.addWidget(self.packetInfo)
         self.hexView = QtWidgets.QListWidget(Form)
