@@ -13,9 +13,18 @@ def getPacketInfoDict(packet):
 		p['proto'] = 'ARP'
 		p['ARPSrc'] = packet[ARP].psrc
 		p['ARPDst'] = packet[ARP].pdst
-		p['ARPop'] = 'who has' if packet[ARP].op == 1 else None
+		p['ARPMacDst'] = packet[ARP].hwdst
+		p['ARPMacSrc'] = packet[ARP].hwsrc
+		print(packet[ARP].op)
+		if (packet[ARP].op == 1):
+			p['ARPop'] = 'who has'
+		elif (packet[ARP].op == 2):
+			p['ARPop'] = 'is at'
 		try:
-			p['info'] = p['ARPop'] + ' ' + packet[ARP].pdst + '? tell ' + packet[ARP].psrc
+			if (p['ARPop'] == 'who has'):
+				p['info'] = p['ARPop'] + ' ' + packet[ARP].pdst + '? tell ' + packet[ARP].psrc
+			elif (p['ARPop'] == 'is at'):
+				p['info'] = packet[ARP].psrc + ' is at ' + p['srcMac']
 		except(TypeError):
 			p['info'] = ""
 		return p

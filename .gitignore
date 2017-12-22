@@ -2,3 +2,6 @@ __pycache__/
 interfaces.pyc
 packets.pcap
 problems.pcap
+arp.pcap
+icmp.pcap.pcap
+.pcap
