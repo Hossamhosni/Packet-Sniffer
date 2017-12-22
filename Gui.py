@@ -139,22 +139,48 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		self.packetInfo.setHeaderLabel("Packet Information:")
 		self.packetInfo.clear()
 		#parents
-		infoItem = QtWidgets.QTreeWidgetItem(self.packetInfo)
-		infoItem.setText(0,self.packetList[rowNum].mysummary())
-		#infoItem2 = QtWidgets.QTreeWidgetItem(self.packetInfo)
-		#infoItem2.setText(0,"hello there!")
-		#infoItem3 = QtWidgets.QTreeWidgetItem(self.packetInfo)
-		#infoItem3.setText(0,"hello there!")
-		#children
-		childItem = QtWidgets.QTreeWidgetItem(infoItem)
-		childItem.setText(0,self.packetList[rowNum].summary())
-		#childItem2 = QtWidgets.QTreeWidgetItem(infoItem2)
-		#childItem2.setText(0,"hello!!!")
-		#childItem3 = QtWidgets.QTreeWidgetItem(infoItem3)
-		#childItem3.setText(0,"hello!!!")
+		infoDict = getPacketInfoDict(self.packetList[rowNum])
+		proto = infoDict["proto"]
 		
-        #try
-		#print(self.packetList[rowNum].mysummary())
+		infoItem = QtWidgets.QTreeWidgetItem(self.packetInfo)
+		infoItem.setText(0,"Ethernet")
+		childItem = QtWidgets.QTreeWidgetItem(infoItem)
+		childItem.setText(0,"Source MAC: "+infoDict["srcMac"]+" , "+"Destination MAC: "+infoDict["dstMac"])
+		
+		if(proto == "ARP"):
+			infoItem2 = QtWidgets.QTreeWidgetItem(self.packetInfo)
+			infoItem2.setText(0,"Address Resolution Protocol (ARP)")
+			childItem2 = QtWidgets.QTreeWidgetItem(infoItem2)
+			childItem2.setText(0,"Source IP: "+infoDict["ARPSrc"]+" , "+"Destination IP: "+infoDict["ARPDst"])
+			
+		else:
+			infoItem2 = QtWidgets.QTreeWidgetItem(self.packetInfo)
+			infoItem2.setText(0,"Internet Protocol (IP)"+" Version: "+infoDict["IPVersion"])
+			childItem2 = QtWidgets.QTreeWidgetItem(infoItem2)
+			childItem2.setText(0,"Source IP: "+infoDict["IPsrc"]+" , "+"Destination IP: "+infoDict["IPdst"])
+			childItem22 = QtWidgets.QTreeWidgetItem(infoItem2)
+			childItem22.setText(0,"Time to live: "+infoDict["IPttl"])
+			childItem23 = QtWidgets.QTreeWidgetItem(infoItem2)
+			childItem23.setText(0,"Length: "+infoDict["IPlen"])
+			
+			if proto=="UDP":
+				infoItem3 = QtWidgets.QTreeWidgetItem(self.packetInfo)
+				infoItem3.setText(0,"User Datagram Protocol (UDP)")
+				childItem3 = QtWidgets.QTreeWidgetItem(infoItem3)
+				childItem3.setText(0,"Source Port: "+infoDict["srcPort"]+" , Destination Port: "+infoDict["dstPort"])
+				childItem32 = QtWidgets.QTreeWidgetItem(infoItem3)
+				childItem32.setText(0,"Checksum: "+str(infoDict["UDPcheckSum"]))
+				childItem33 = QtWidgets.QTreeWidgetItem(infoItem3)
+				childItem33.setText(0,"Length: "+infoDict["UDPlen"])
+			
+			elif proto=="TCP":
+				infoItem3 = QtWidgets.QTreeWidgetItem(self.packetInfo)
+				infoItem3.setText(0,"Transmission Control Protocol (TCP)")
+				childItem3 = QtWidgets.QTreeWidgetItem(infoItem3)
+				childItem3.setText(0,"Source Port: "+infoDict["srcPort"]+" , Destination Port: "+infoDict["dstPort"])
+				childItem32 = QtWidgets.QTreeWidgetItem(infoItem3)
+				childItem32.setText(0,"Checksum: "+str(infoDict["TCPcheckSum"]))
+			
 
 	def filterFunction(self):
 		query = self.lineEdit.text()
