@@ -147,48 +147,67 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 		FirstLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
 		FirstLayer.setText(0,"Ethernet")
 		childItem = QtWidgets.QTreeWidgetItem(FirstLayer)
-		childItem.setText(0,"Source MAC: "+infoDict["srcMac"]+" , "+"Destination MAC: "+infoDict["dstMac"])
+		childItem.setText(0,"Source MAC: "+infoDict["srcMac"] + ", "+"Destination MAC: "+infoDict["dstMac"])
 
-		if(proto == "ARP"):
-			SecondLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
-			SecondLayer.setText(0,"Address Resolution Protocol (ARP)")
-			childItem2 = QtWidgets.QTreeWidgetItem(SecondLayer)
-			childItem2.setText(0,"Source IP: " + infoDict["ARPSrc"]+ ", "+"Destination IP: "+infoDict["ARPDst"])
-			if (infoDict['ARPop'] == 'who has' or infoDict['ARPop'] == 'is at'):
-				childItem23 = QtWidgets.QTreeWidgetItem(SecondLayer)
-				childItem23.setText(0, "Source Mac:" + infoDict['ARPMacSrc'])
-				childItem23 = QtWidgets.QTreeWidgetItem(SecondLayer)
-				childItem23.setText(0, "Target Mac:" + infoDict['ARPMacDst'])
+		if (proto == "ARP"):
+			try:
+				SecondLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
+				SecondLayer.setText(0,"Address Resolution Protocol (ARP)")
+				childItem2 = QtWidgets.QTreeWidgetItem(SecondLayer)
+				childItem2.setText(0,"Source IP: " + infoDict["ARPSrc"]+ ", "+"Destination IP: "+infoDict["ARPDst"])
+				if (infoDict['ARPop'] == 'who has' or infoDict['ARPop'] == 'is at'):
+					childItem23 = QtWidgets.QTreeWidgetItem(SecondLayer)
+					childItem23.setText(0, "Source Mac:" + infoDict['ARPMacSrc'])
+					childItem23 = QtWidgets.QTreeWidgetItem(SecondLayer)
+					childItem23.setText(0, "Target Mac:" + infoDict['ARPMacDst'])
+			except(KeyError):
+				pass
 
 		else:
-			SecondLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
-			SecondLayer.setText(0,"Internet Protocol (IP)"+" Version: "+infoDict["IPVersion"])
-			childItem2 = QtWidgets.QTreeWidgetItem(SecondLayer)
-			childItem2.setText(0,"Source IP: "+infoDict["IPsrc"]+ ", "+"Destination IP: "+infoDict["IPdst"])
-			childItem22 = QtWidgets.QTreeWidgetItem(SecondLayer)
-			childItem22.setText(0,"Time to live: "+infoDict["IPttl"])
-			childItem23 = QtWidgets.QTreeWidgetItem(SecondLayer)
-			childItem23.setText(0,"Length: "+infoDict["IPlen"])
-			childItem24 = QtWidgets.QTreeWidgetItem(SecondLayer)
-			childItem24.setText(0,"Checksum: " + str(infoDict["IPcheckSum"]))
+			try:
+				SecondLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
+				SecondLayer.setText(0,"Internet Protocol (IP)"+" Version: "+infoDict["IPVersion"])
+				childItem2 = QtWidgets.QTreeWidgetItem(SecondLayer)
+				childItem2.setText(0,"Source IP: "+infoDict["IPsrc"]+ ", "+"Destination IP: "+infoDict["IPdst"])
+				childItem23 = QtWidgets.QTreeWidgetItem(SecondLayer)
+				childItem23.setText(0,"Length: "+infoDict["IPlen"])
+				if (infoDict["IPVersion"] == '4'):
+					childItem22 = QtWidgets.QTreeWidgetItem(SecondLayer)
+					childItem22.setText(0,"Time to live: "+infoDict["IPttl"])
+					childItem24 = QtWidgets.QTreeWidgetItem(SecondLayer)
+					childItem24.setText(0,"Checksum: " + str(infoDict["IPcheckSum"]))
+			except(KeyError):
+				pass
 
-			if proto == "UDP":
-				ThirdLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
-				ThirdLayer.setText(0,"User Datagram Protocol (UDP)")
-				childItem3 = QtWidgets.QTreeWidgetItem(ThirdLayer)
-				childItem3.setText(0,"Source Port: "+infoDict["srcPort"] + ", Destination Port: "+infoDict["dstPort"])
-				childItem32 = QtWidgets.QTreeWidgetItem(ThirdLayer)
-				childItem32.setText(0,"Checksum: "+str(infoDict["UDPcheckSum"]))
-				childItem33 = QtWidgets.QTreeWidgetItem(ThirdLayer)
-				childItem33.setText(0,"Length: "+infoDict["UDPlen"])
+			try:
+				if proto == "UDP":
+					ThirdLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
+					ThirdLayer.setText(0,"User Datagram Protocol (UDP)")
+					childItem3 = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childItem3.setText(0,"Source Port: "+infoDict["srcPort"] + ", Destination Port: "+infoDict["dstPort"])
+					childItem32 = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childItem32.setText(0,"Checksum: "+str(infoDict["UDPcheckSum"]))
+					childItem33 = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childItem33.setText(0,"Length: "+infoDict["UDPlen"])
 
-			elif proto == "TCP":
-				ThirdLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
-				ThirdLayer.setText(0,"Transmission Control Protocol (TCP)")
-				childItem3 = QtWidgets.QTreeWidgetItem(ThirdLayer)
-				childItem3.setText(0,"Source Port: " + infoDict["srcPort"] + ", Destination Port: " + infoDict["dstPort"])
-				childItem32 = QtWidgets.QTreeWidgetItem(ThirdLayer)
-				childItem32.setText(0,"Checksum: " + str(infoDict["TCPcheckSum"]))
+				elif proto == "TCP":
+					ThirdLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
+					ThirdLayer.setText(0,"Transmission Control Protocol (TCP)")
+					childItem3 = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childItem3.setText(0,"Source Port: " + infoDict["srcPort"] + ", Destination Port: " + infoDict["dstPort"])
+					childItem32 = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childItem32.setText(0,"Checksum: " + str(infoDict["TCPcheckSum"]))
+				elif proto == "ICMP":
+					ThirdLayer = QtWidgets.QTreeWidgetItem(self.packetInfo)
+					ThirdLayer.setText(0, "Internet Control Message Protocol (ICMP)")
+					childType = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childType.setText(0, "Type: " + infoDict['ICMPtype'])
+					childCode = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childCode.setText(0, "Code: " + infoDict['ICMPcode'])
+					childCheckSum = QtWidgets.QTreeWidgetItem(ThirdLayer)
+					childCheckSum.setText(0, "Checksum: " + infoDict['ICMPcheckSum'])
+			except(KeyError):
+				pass
 
 	def filterFunction(self):
 		query = self.lineEdit.text()

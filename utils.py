@@ -39,7 +39,7 @@ def getPacketInfoDict(packet):
 		p['IPsrc'] = packet[IPv6].src
 		p['IPdst'] = packet[IPv6].dst
 		p['IPVersion'] = '6'
-		p['IPlen'] = packet[IPv6].plen
+		p['IPlen'] = str(packet[IPv6].plen)
 	# TCP and UDP
 	if (packet.haslayer(UDP) or packet.haslayer(TCP)):
 		if (packet.haslayer(UDP)):
@@ -60,6 +60,9 @@ def getPacketInfoDict(packet):
 		p['IPsrc'] = packet[IP].src
 		p['IPdst'] = packet[IP].dst
 		p['IPVersion'] = str(packet[IP].version)
+		p['ICMPtype'] = str(packet[ICMP].type)
+		p['ICMPcode'] = str(packet[ICMP].code)
+		p['ICMPcheckSum'] = str(packet[ICMP].chksum)
 		return p
 	else:
 		p['proto'] = packet.lastlayer().name
