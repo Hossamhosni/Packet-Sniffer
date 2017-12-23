@@ -234,7 +234,7 @@ class MainWidget(QtWidgets.QWidget, Ui_MainWidget):
 				for i in range(0, len(self.packetList)):
 					dictPacket = getPacketInfoDict(self.packetList[i])
 					try:
-						if (dictPacket['srcIP'].lower() != value.lower() and dictPacket['dstIP'] != value.lower()):
+						if (dictPacket['IPsrc'].lower() != value.lower() and dictPacket['IPdst'] != value.lower()):
 							self.packetTable.setRowHidden(i, True)
 					except(AttributeError):
 						self.packetTable.setRowHidden(i, True)
